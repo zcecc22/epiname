@@ -17,9 +17,11 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
             } else {
                 if(season.length == 1) season = '0' + season;
                 if(episode.length == 1) episode = '0' + episode;
-                console.log(file_path + ' -> ' + seriesname + '.S'
+                var new_name = seriesname + '.S'
                     + season + 'E' + episode + '.'
-                    + episode_obj.EpisodeName + path.extname(file_path));
+                    + episode_obj.EpisodeName + path.extname(file_path);
+                console.log(file_path + ' -> ' + new_name);
+                fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
             }
         });
 };
