@@ -4,13 +4,31 @@ var API_KEY = "CCBDC1DA89F160AF"
 
 var find_show_by_name = function(name, cb) {
     var url = "http://thetvdb.com/api/GetSeries.php?seriesname="+name;
-    std_request(url, cb);
+    std_request(url, function(err, value) {
+        if(!err) {
+            if(value.Data.Series === undefined) {
+                cb(err, []);
+            } else if(value.Data.Series.seriesid !== undefined) {
+                cb(err, [value.Data.Series,]);
+            } else {
+                cb(err, value.Data.Series);
+            }
+        } else {
+            cb(err, value);
+        }
+    });
 };
 
 var find_episode = function(show_id, season, episode, cb) {
     var url = "http://thetvdb.com/api/" + API_KEY + "/series/"
     + show_id + "/default/" + season + "/" + episode + "/en.xml";
-    std_request(url, cb);
+    std_request(url, function(err, value) {
+        if(!err) {
+            cb(err, value.Data.Episode);
+        } else {
+            cb(err, value);
+        }
+    });
 };
 
 var std_request = function(url, cb) {
@@ -25,7 +43,7 @@ var std_request = function(url, cb) {
             }
             cb(err, val);
         } else {
-            cb("Could not complete the request", null);
+            cb("Could not complete the request.", null);
         }
     });
 };
