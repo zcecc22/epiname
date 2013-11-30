@@ -2,7 +2,7 @@ var PATTERNS = [/S(\d{1,2})E(\d{1,2})/i,
                 /(\d{1,2})X(\d{1,2})/i,
                 /Season (\d{1,2}) Episode (\d{1,2})/i];
 
-var get_media_info = function(filename) {
+var get_show_info = function(filename) {
     var value = null;
     for (var i = 0; i < PATTERNS.length; i++) {
         if(PATTERNS[i].test(filename)) {
@@ -18,4 +18,4 @@ var get_media_info = function(filename) {
     return value;
 };
 
-exports.get_media_info = get_media_info;
+exports.get_show_info = get_show_info;
