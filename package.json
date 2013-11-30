@@ -10,7 +10,8 @@
     "request": "2.27.x",
     "xml2json": "0.3.x",
     "commander": "2.1.x",
-    "promptly": "0.2.x"
+    "promptly": "0.2.x",
+    "async": "0.2.x"
   },
   "devDependencies": {
     "mocha": "1.14.x"
