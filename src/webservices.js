@@ -1,6 +1,6 @@
 var request = require("request");
 var x2j = require("xml2json");
-var API_KEY = "CCBDC1DA89F160AF"
+var API_KEY = require("./api").API_KEY;
 
 var find_show_by_name = function(name, cb) {
     var url = "http://thetvdb.com/api/GetSeries.php?seriesname="+name;
