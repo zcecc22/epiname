@@ -29,3 +29,6 @@ var std_request = function(url, cb) {
         }
     });
 };
+
+exports.find_show_by_name = find_show_by_name;
+exports.find_episode = find_episode;

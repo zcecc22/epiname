@@ -4,7 +4,7 @@
   "description": "TV Series/Movie automatic renamer.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*-test.js"
+    "test": "mocha test/test-*.js"
   },
   "dependencies": {
     "request": "2.27.x",
