@@ -1,6 +1,8 @@
 var request = require("request");
 var x2j = require("xml2json");
-var API_KEY = require("./api").API_KEY;
+var api = require("./api");
+
+var TV_DB_API_KEY = api.TV_DB_API_KEY;
 
 var find_show_by_name = function(name, cb) {
     var url = "http://thetvdb.com/api/GetSeries.php?seriesname="+name;
@@ -20,7 +22,7 @@ var find_show_by_name = function(name, cb) {
 };
 
 var find_episode = function(show_id, season, episode, cb) {
-    var url = "http://thetvdb.com/api/" + API_KEY + "/series/"
+    var url = "http://thetvdb.com/api/" + TV_DB_API_KEY + "/series/"
     + show_id + "/default/" + season + "/" + episode + "/en.xml";
     std_request(url, function(err, value) {
         if(!err) {

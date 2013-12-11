@@ -45,4 +45,10 @@ describe("Filenames", function() {
     assert.equal('Stargate SG1', res.seriesname);
   });
 
+  it("get movie info should parse filenames", function() {
+    res = fn.get_movie_info("Man.of.Steel.2013.DVDRip.H264.AAC.mp4");
+    assert.equal('2013', res.year);
+    assert.equal('Man of Steel', res.moviename);
+  });
+
 });
