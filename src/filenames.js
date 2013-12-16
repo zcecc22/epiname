@@ -1,6 +1,7 @@
 var SHOW_PATTERNS = [/S(\d{1,2})E(\d{1,2})/i,
                 /(\d{1,2})X(\d{1,2})/i,
-                /Season (\d{1,2}) Episode (\d{1,2})/i];
+                /Season (\d{1,2}) Episode (\d{1,2})/i,
+                /(\d{1})(\d{2})/i];
 
 var MOVIE_PATTERNS = [/(\d{4})/i];
 

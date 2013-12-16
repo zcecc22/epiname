@@ -29,7 +29,7 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
 var rename_movie = function(file_path, title, release_year) {
     var new_name = title + " (" + release_year + ")" + path.extname(file_path);
     console.log(file_path + " -> " + new_name);
-    //fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
+    fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
 };
 
 var get_show_list = function(shows) {
@@ -158,7 +158,6 @@ program.parse(process.argv);
 
 
 async.eachSeries(program.args, function(item, callback){
-    console.log(program.name);
     var file_path = item;
     if(fs.existsSync(file_path)){
         var filename = path.basename(file_path);
