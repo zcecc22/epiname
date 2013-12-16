@@ -26,6 +26,12 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
         });
 };
 
+var rename_movie = function(file_path, title, release_year) {
+    var new_name = title + " (" + release_year + ")" + path.extname(file_path);
+    console.log(file_path + " -> " + new_name);
+    //fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
+};
+
 var get_show_list = function(shows) {
     var l = [];
     for (var i = 0; i < shows.length; i++) {
@@ -34,7 +40,22 @@ var get_show_list = function(shows) {
     return l;
 };
 
+var get_movie_list = function(movies) {
+    var l = [];
+    var release_year = null;
+    var title = null;
+    var movie_o = null;
+    for (var i = 0; i < movies.length; i++) {
+        movie_o = movies[i];
+        release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+        title = movie_o.title;
+        l.push(title + " - " + release_year);
+    };
+    return l;
+};
+
 var name_to_show = {};
+var name_to_movie = {};
 
 program.version("0.0.1");
 program.parse(process.argv);
@@ -51,7 +72,53 @@ async.eachSeries(program.args, function(item, callback){
                 console.log("No pattern match for " + filename + " .");
                 callback(null);
             } else {
-                //MM
+                if(movie_info.moviename in name_to_movie){
+                    var movie_o = name_to_movie[movie_info.moviename];
+                    var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+                    var title = movie_o.title;
+                    rename_movie(file_path, title, release_year);
+                    callback(null);
+                } else {
+                    ws.find_movie_by_name(movie_info.moviename, function(err, movies) {
+                        if(err){
+                            console.log("An Error Occured:");
+                            console.log(err);
+                            callback(null);
+                        } else {
+                            if(movies.length > 1){
+                                setTimeout(function() {
+                                    promptly.prompt("", function(err, value) {
+                                            index = parseInt(value, 10) - 1;
+                                            name_to_movie[movie_info.moviename] = movies[index];
+                                            var movie_o = movies[index];
+                                            var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+                                            var title = movie_o.title;
+                                            rename_movie(file_path, title, release_year);
+                                            callback(null);
+                                    });
+                                    console.log("Please enter N° of matching show for: ["
+                                        + movie_info.moviename + "]");
+                                    var l = get_movie_list(movies);
+                                    for (var i = 0; i < l.length; i++) {
+                                        console.log((i+1).toString() + ": " + l[i]);
+                                    };
+
+                                }, 100);
+
+                            } else if (movies.length == 1) {
+                                name_to_movie[movie_info.moviename] = movies[0];
+                                var movie_o = movies[0];
+                                var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+                                var title = movie_o.title;
+                                rename_movie(file_path, title, release_year);
+                                callback(null);
+                            } else if (movies.length == 0) {
+                                console.log("No match found for: " + movie_info.moviename);
+                                callback(null);
+                            }
+                        }
+                    });
+                }
             }
         } else {
             if(show_info.seriesname in name_to_show){

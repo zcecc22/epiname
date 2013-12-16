@@ -33,4 +33,21 @@ describe("Web Services", function() {
     });
   });
 
+  it("find movie by name should return a list of JSON objects", function(done) {
+    ws.find_movie_by_name("World War Z", function(err, value) {
+      assert.equal(null, err);
+      assert.equal("World War Z", value[0].title);
+      assert.equal("2013-06-21", value[0].release_date);
+      assert.equal("2013", (new Date(Date.parse(value[0].release_date))).getFullYear().toString());
+      done();
+    });
+  });
+
+  it("find movie by name should return a list of JSON objects", function(done) {
+    ws.find_movie_by_name("Z21", function(err, value) {
+      assert.equal(true, value.length === 0);
+      done();
+    });
+  });
+
 });
