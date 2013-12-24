@@ -154,16 +154,33 @@ var name_to_movie = {};
 
 program.version("0.0.1");
 program.option('-n, --name [value]', 'Manual movie name.');
+program.option('-m, --movie', 'Movie mode.');
 program.parse(process.argv);
-
 
 async.eachSeries(program.args, function(item, callback){
     var file_path = item;
     if(fs.existsSync(file_path)){
         var filename = path.basename(file_path);
-        var show_info = fn.get_show_info(filename);
 
-        if(show_info === null){
+        if(program.show !== undefined && program.movie !== undefined){
+            console.log("Conflicting options selected.");
+            callback(null);
+            return;
+        }
+
+        if(program.movie === undefined){
+            var show_info = fn.get_show_info(filename);
+            if(show_info === null){
+                console.log("No pattern match for " + filename + " .");
+                callback(null);
+                return;
+            } else {
+                handle_show(file_path, show_info, callback);
+                return;
+            }
+        }
+
+        if(program.movie !== undefined){
             var movie_info = null;
 
             if(program.name !== undefined){
@@ -175,13 +192,13 @@ async.eachSeries(program.args, function(item, callback){
             if(movie_info === null){
                 console.log("No pattern match for " + filename + " .");
                 callback(null);
+                return;
             } else {
-                handle_movie(file_path, movie_info, callback);
+                handle_movie(file_path, show_info, callback);
+                return;
             }
-
-        } else {
-                handle_show(file_path, show_info, callback);
         }
+
     } else {
         console.log("Input file [" + file_path + "] does not exist.");
         callback(null);
