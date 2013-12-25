@@ -162,12 +162,6 @@ async.eachSeries(program.args, function(item, callback){
     if(fs.existsSync(file_path)){
         var filename = path.basename(file_path);
 
-        if(program.show !== undefined && program.movie !== undefined){
-            console.log("Conflicting options selected.");
-            callback(null);
-            return;
-        }
-
         if(program.movie === undefined){
             var show_info = fn.get_show_info(filename);
             if(show_info === null){
