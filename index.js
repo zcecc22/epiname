@@ -188,7 +188,7 @@ async.eachSeries(program.args, function(item, callback){
                 callback(null);
                 return;
             } else {
-                handle_movie(file_path, show_info, callback);
+                handle_movie(file_path, movie_info, callback);
                 return;
             }
         }
