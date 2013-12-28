@@ -20,16 +20,26 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
                 var new_name = seriesname + ".S"
                     + season + "E" + episode + "."
                     + episode_obj.EpisodeName + path.extname(file_path);
+                var new_path = path.join(path.dirname(file_path), new_name);
                 console.log(file_path + " -> " + new_name);
-                fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
+                if(!fs.existsSync(new_path)){
+                    fs.renameSync(file_path, new_path);
+                } else {
+                    console.log(new_path + " already exists. Skipping.")
+                }
             }
         });
 };
 
 var rename_movie = function(file_path, title, release_year) {
     var new_name = title + " (" + release_year + ")" + path.extname(file_path);
+    var new_path = path.join(path.dirname(file_path), new_name);
     console.log(file_path + " -> " + new_name);
-    fs.renameSync(file_path, path.join(path.dirname(file_path), new_name));
+    if(!fs.existsSync(new_path)){
+        fs.renameSync(file_path, new_path);
+    } else {
+        console.log(new_path + " already exists. Skipping.")
+    }
 };
 
 var get_show_list = function(shows) {
@@ -55,53 +65,43 @@ var get_movie_list = function(movies) {
 };
 
 var handle_movie = function(file_path, movie_info, callback) {
-    if(movie_info.moviename in name_to_movie){
-        var movie_o = name_to_movie[movie_info.moviename];
-        var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
-        var title = movie_o.title;
-        rename_movie(file_path, title, release_year);
-        callback(null);
-    } else {
-        ws.find_movie_by_name(movie_info.moviename, function(err, movies) {
-            if(err){
-                console.log("An Error Occured:");
-                console.log(err);
+    ws.find_movie_by_name(movie_info.moviename, function(err, movies) {
+        if(err){
+            console.log("An Error Occured:");
+            console.log(err);
+            callback(null);
+        } else {
+            if(movies.length > 1){
+                setTimeout(function() {
+                    promptly.prompt("", function(err, value) {
+                            index = parseInt(value, 10) - 1;
+                            var movie_o = movies[index];
+                            var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+                            var title = movie_o.title;
+                            rename_movie(file_path, title, release_year);
+                            callback(null);
+                    });
+                    console.log("Please enter N° of matching movie for: ["
+                        + movie_info.moviename + "] / " + file_path);
+                    var l = get_movie_list(movies);
+                    for (var i = 0; i < l.length; i++) {
+                        console.log((i+1).toString() + ": " + l[i]);
+                    };
+
+                }, 100);
+
+            } else if (movies.length == 1) {
+                var movie_o = movies[0];
+                var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
+                var title = movie_o.title;
+                rename_movie(file_path, title, release_year);
                 callback(null);
-            } else {
-                if(movies.length > 1){
-                    setTimeout(function() {
-                        promptly.prompt("", function(err, value) {
-                                index = parseInt(value, 10) - 1;
-                                name_to_movie[movie_info.moviename] = movies[index];
-                                var movie_o = movies[index];
-                                var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
-                                var title = movie_o.title;
-                                rename_movie(file_path, title, release_year);
-                                callback(null);
-                        });
-                        console.log("Please enter N° of matching movie for: ["
-                            + movie_info.moviename + "]");
-                        var l = get_movie_list(movies);
-                        for (var i = 0; i < l.length; i++) {
-                            console.log((i+1).toString() + ": " + l[i]);
-                        };
-
-                    }, 100);
-
-                } else if (movies.length == 1) {
-                    name_to_movie[movie_info.moviename] = movies[0];
-                    var movie_o = movies[0];
-                    var release_year = (new Date(Date.parse(movie_o.release_date))).getFullYear().toString();
-                    var title = movie_o.title;
-                    rename_movie(file_path, title, release_year);
-                    callback(null);
-                } else if (movies.length == 0) {
-                    console.log("No match found for: " + movie_info.moviename);
-                    callback(null);
-                }
+            } else if (movies.length == 0) {
+                console.log("No match found for: " + movie_info.moviename);
+                callback(null);
             }
-        });
-    }
+        }
+    });
 };
 
 var handle_show = function(file_path, show_info, callback) {
@@ -127,7 +127,7 @@ var handle_show = function(file_path, show_info, callback) {
                                 callback(null);
                             });
                         console.log("Please enter N° of matching show for: ["
-                            + show_info.seriesname + "]");
+                            + show_info.seriesname + "] / " + file_path);
                         var l = get_show_list(shows);
                         for (var i = 0; i < l.length; i++) {
                             console.log((i+1).toString() + ": " + l[i]);
@@ -150,7 +150,6 @@ var handle_show = function(file_path, show_info, callback) {
 };
 
 var name_to_show = {};
-var name_to_movie = {};
 
 program.version("0.0.1");
 program.option('-n, --name [value]', 'Manual movie name.');
