@@ -17,9 +17,10 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
             } else {
                 if(season.length == 1) season = "0" + season;
                 if(episode.length == 1) episode = "0" + episode;
-                var new_name = seriesname + ".S"
+                var new_name = seriesname.replace("/", " ") + ".S"
                     + season + "E" + episode + "."
-                    + episode_obj.EpisodeName + path.extname(file_path);
+                    + episode_obj.EpisodeName.replace("/", " ") 
+                    + path.extname(file_path);
                 var new_path = path.join(path.dirname(file_path), new_name);
                 console.log(file_path + " -> " + new_name);
                 if(!fs.existsSync(new_path)){
@@ -32,7 +33,9 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
 };
 
 var rename_movie = function(file_path, title, release_year) {
-    var new_name = title + " (" + release_year + ")" + path.extname(file_path);
+    var new_name = title.replace("/", " ") 
+                   + " (" + release_year + ")" 
+                   + path.extname(file_path);
     var new_path = path.join(path.dirname(file_path), new_name);
     console.log(file_path + " -> " + new_name);
     if(!fs.existsSync(new_path)){
