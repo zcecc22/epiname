@@ -19,7 +19,7 @@ var rename_show = function(file_path, seriesname, seriesid, season, episode) {
                 if(episode.length == 1) episode = "0" + episode;
                 var new_name = seriesname.replace("/", " ") + ".S"
                     + season + "E" + episode + "."
-                    + episode_obj.EpisodeName.replace("/", " ") 
+                    + episode_obj.EpisodeName.toString().replace("/", " ") 
                     + path.extname(file_path);
                 var new_path = path.join(path.dirname(file_path), new_name);
                 console.log(file_path + " -> " + new_name);
