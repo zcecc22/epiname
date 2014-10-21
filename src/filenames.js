@@ -28,6 +28,7 @@ var get_movie_info = function(filename) {
             value = {};
             s_str = filename.split(MOVIE_PATTERNS[i]);
             value.moviename = s_str[0].replace(/\W+/g, " ").trim();
+            value.year = s_str[1].toString();
             break;
         }
     };
